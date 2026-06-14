@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ուսուցիչների վերապատրաստման ծրագիր</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  /* ==========================================
+     ԳՈՒՅՆԵՐ — փոփոխեք այստեղ
+     ========================================== */
+  :root {
+    --color-primary:       #0C447C;   /* Հիմնական կապույտ */
+    --color-primary-light: #E6F1FB;   /* Բաց կապույտ ֆոն */
+    --color-primary-mid:   #185FA5;   /* Hover կապույտ */
+    --color-accent:        #1D9E75;   /* Կանաչ շեշտ */
+    --color-accent-light:  #E1F5EE;   /* Բաց կանաչ ֆոն */
+    --color-accent-dark:   #0F6E56;   /* Մուգ կանաչ */
+    --color-text:          #1a1a1a;   /* Հիմնական տեքստ */
+    --color-text-muted:    #666;      /* Ստվերային տեքստ */
+    --color-border:        rgba(0,0,0,0.1);
+    --color-bg:            #ffffff;
+    --color-bg-soft:       #f8f9fa;
+    --radius-md:           8px;
+    --radius-lg:           12px;
+  }
+
+  /* ==========================================
+     ՀԻՄՔ
+     ========================================== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--color-text);
+    background: var(--color-bg);
+    line-height: 1.6;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ==========================================
+     NAVIGATION
+     ========================================== */
+  nav {
+    border-bottom: 0.5px solid var(--color-border);
+    padding: 1rem 0;
+    position: sticky; top: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+  .nav-inner {
+    max-width: 900px; margin: 0 auto; padding: 0 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Noto Serif', serif;
+    font-size: 1.1rem; color: var(--color-primary); font-weight: 700;
+  }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a {
+    font-size: 13px; color: var(--color-text-muted);
+    text-decoration: none; transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--color-primary); }
+  .nav-btn {
+    background: var(--color-primary); color: #fff;
+    border: none; padding: 8px 18px; border-radius: var(--radius-md);
+    font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit;
+    transition: background .2s; text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--color-primary-mid); }
+
+  /* ==========================================
+     HERO
+     ========================================== */
+  .hero {
+    padding: 5rem 0 4rem; text-align: center;
+    background: linear-gradient(160deg, var(--color-primary-light) 0%, var(--color-accent-light) 100%);
+  }
+  .hero-eyebrow {
+    font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--color-accent); font-weight: 500; margin-bottom: 1rem;
+  }
+  .hero-title {
+    font-family: 'Noto Serif', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.2; color: var(--color-primary); margin-bottom: 1.25rem;
+  }
+  .hero-title span { color: var(--color-accent); font-style: italic; }
+  .hero-desc {
+    font-size: 16px; color: var(--color-text-muted);
+    max-width: 540px; margin: 0 auto 2rem; line-height: 1.7;
+  }
+  .badge-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; margin-bottom: 2.5rem;
+  }
+  .badge {
+    background: #fff; color: var(--color-accent-dark);
+    font-size: 12px; padding: 5px 14px; border-radius: 20px;
+    font-weight: 500; border: 0.5px solid var(--color-accent);
+  }
+  .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--color-primary); color: #fff; border: none;
+    padding: 14px 28px; border-radius: var(--radius-md);
+    font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit;
+    transition: background .2s; text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--color-primary-mid); }
+  .btn-secondary {
+    background: transparent; color: var(--color-primary);
+    border: 1.5px solid var(--color-primary);
+    padding: 13px 28px; border-radius: var(--radius-md);
+    font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit;
+    transition: all .2s; text-decoration: none; display: inline-block;
+  }
+  .btn-secondary:hover { background: var(--color-primary-light); }
+
+  /* ==========================================
+     SECTIONS
+     ========================================== */
+  section { padding: 4rem 0; }
+  section + section { border-top: 0.5px solid var(--color-border); }
+  .section-label {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--color-text-muted); font-weight: 500; margin-bottom: .5rem;
+  }
+  .section-title {
+    font-family: 'Noto Serif', serif; font-size: 1.7rem;
+    color: var(--color-primary); margin-bottom: .5rem;
+  }
+  .section-sub {
+    font-size: 14px; color: var(--color-text-muted);
+    margin-bottom: 2rem; line-height: 1.6; max-width: 580px;
+  }
+
+  /* ==========================================
+     MODULES
+     ========================================== */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px; margin-bottom: 2rem;
+  }
+  .module-card {
+    background: var(--color-bg); border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg); padding: 1.5rem;
+    position: relative; overflow: hidden; transition: border-color .2s, box-shadow .2s;
+  }
+  .module-card:hover { border-color: var(--color-primary); box-shadow: 0 4px 16px rgba(12,68,124,.08); }
+  .module-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .module-card.m1::before { background: var(--color-primary); }
+  .module-card.m2::before { background: var(--color-accent); }
+  .module-card.m3::before { background: var(--color-primary-mid); }
+  .module-num {
+    font-size: 11px; font-weight: 500; color: var(--color-text-muted);
+    margin-bottom: .75rem; text-transform: uppercase; letter-spacing: .08em;
+  }
+  .module-name {
+    font-family: 'Noto Serif', serif; font-size: 1.05rem;
+    color: var(--color-primary); margin-bottom: .5rem; line-height: 1.4;
+  }
+  .module-hours { font-size: 13px; color: var(--color-text-muted); margin-bottom: 1rem; }
+  .module-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .module-tag {
+    font-size: 11px; background: var(--color-primary-light);
+    color: var(--color-primary); padding: 3px 10px; border-radius: 12px;
+  }
+
+  /* ==========================================
+     PRICING
+     ========================================== */
+  .pricing-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .price-card {
+    border: 0.5px solid var(--color-border); border-radius: var(--radius-lg);
+    padding: 1.5rem; background: var(--color-bg);
+  }
+  .price-card.featured { border: 2px solid var(--color-primary); }
+  .price-badge {
+    display: inline-block; background: var(--color-primary); color: #fff;
+    font-size: 11px; padding: 3px 10px; border-radius: 12px; margin-bottom: .75rem;
+  }
+  .price-label { font-size: 12px; color: var(--color-text-muted); margin-bottom: .5rem; }
+  .price-amount { font-size: 2rem; font-weight: 600; color: var(--color-primary); margin-bottom: .25rem; }
+  .price-amount span { font-size: 14px; font-weight: 400; color: var(--color-text-muted); }
+  .price-desc { font-size: 13px; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 1rem; }
+  .feature-list { list-style: none; margin-bottom: 1.25rem; }
+  .feature-list li {
+    font-size: 13px; color: var(--color-text-muted); padding: 5px 0;
+    border-bottom: 0.5px solid var(--color-border);
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .feature-list li:last-child { border: none; }
+  .check { color: var(--color-accent); font-size: 16px; flex-shrink: 0; }
+
+  /* ==========================================
+     SPECIAL SECTION (Աշխարհացույց)
+     ========================================== */
+  .special-section {
+    background: var(--color-primary); border-radius: 16px;
+    padding: 2.5rem; color: #fff; position: relative; overflow: hidden;
+  }
+  .special-section::after {
+    content: 'Աշխարհացույց';
+    position: absolute; right: -1rem; bottom: -1.5rem;
+    font-family: 'Noto Serif', serif; font-size: 5rem;
+    color: rgba(255,255,255,.06); pointer-events: none; white-space: nowrap;
+  }
+  .special-eyebrow {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: #9FE1CB; margin-bottom: .75rem; font-weight: 500;
+  }
+  .special-title {
+    font-family: 'Noto Serif', serif; font-size: 1.7rem;
+    margin-bottom: 1rem; color: #fff; line-height: 1.3;
+  }
+  .special-desc { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,.8); margin-bottom: 1.5rem; }
+  .special-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px; margin-bottom: 1.5rem;
+  }
+  .special-stat { background: rgba(255,255,255,.08); border-radius: 8px; padding: 1rem; }
+  .special-stat .num { font-size: 1.5rem; font-weight: 500; color: #9FE1CB; }
+  .special-stat .lbl { font-size: 12px; color: rgba(255,255,255,.65); margin-top: 2px; }
+  .special-bottom { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .special-price { font-size: 1.5rem; font-weight: 600; color: #fff; }
+  .special-price sub { font-size: 13px; font-weight: 400; color: rgba(255,255,255,.65); }
+  .credit-note { font-size: 12px; color: #9FE1CB; margin-top: 4px; }
+  .btn-white {
+    background: #fff; color: var(--color-primary); border: none;
+    padding: 12px 24px; border-radius: var(--radius-md);
+    font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit;
+    transition: opacity .2s; text-decoration: none; display: inline-block;
+  }
+  .btn-white:hover { opacity: .9; }
+
+  /* ==========================================
+     TIMELINE ROW
+     ========================================== */
+  .timeline-row {
+    display: flex; border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg); overflow: hidden; margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .tl-item {
+    flex: 1; min-width: 120px; padding: 1.25rem;
+    border-right: 0.5px solid var(--color-border); text-align: center;
+  }
+  .tl-item:last-child { border-right: none; }
+  .tl-icon { font-size: 22px; color: var(--color-accent); margin-bottom: .5rem; }
+  .tl-label { font-size: 12px; color: var(--color-text-muted); line-height: 1.4; }
+
+  /* ==========================================
+     INSTRUCTORS
+     ========================================== */
+  .instructors {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px; margin-top: 1.5rem;
+  }
+  .instructor {
+    background: var(--color-bg); border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg); padding: 1rem; text-align: center;
+    transition: border-color .2s;
+  }
+  .instructor:hover { border-color: var(--color-primary); }
+  .avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--color-primary-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500; color: var(--color-primary);
+    margin: 0 auto .75rem;
+  }
+  .instructor-name { font-size: 13px; font-weight: 500; color: var(--color-text); line-height: 1.3; }
+
+  /* ==========================================
+     CTA + FOOTER
+     ========================================== */
+  .join-cta { text-align: center; padding: 4rem 0; background: var(--color-bg-soft); }
+  .join-cta h2 {
+    font-family: 'Noto Serif', serif; font-size: 1.7rem;
+    color: var(--color-primary); margin-bottom: .75rem;
+  }
+  .join-cta p { font-size: 14px; color: var(--color-text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+  footer {
+    border-top: 0.5px solid var(--color-border); padding: 2rem 0;
+    text-align: center;
+  }
+  footer p { font-size: 13px; color: var(--color-text-muted); }
+  footer strong { color: var(--color-primary); }
+
+  /* ==========================================
+     RESPONSIVE
+     ========================================== */
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .hero { padding: 3rem 0 2.5rem; }
+    .special-section { padding: 1.75rem; }
+    .timeline-row { flex-direction: column; }
+    .tl-item { border-right: none; border-bottom: 0.5px solid var(--color-border); }
+    .tl-item:last-child { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">ՎերaPATRASTUM</div>
+    <div class="nav-links">
+      <a href="#modules">Մոդուլներ</a>
+      <a href="#special">Աշխարհացույց</a>
+      <a href="#instructors">Դասախոսներ</a>
+    </div>
+    <a href="#register" class="nav-btn">Գրանցվել</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">Մասնագիտական զարգացման ծրագիր</div>
+    <h1 class="hero-title">Ուսուցչի հմտությունները՝<br><span>21-րդ դարի</span> մակարդակով</h1>
+    <p class="hero-desc">Գործնական դասընթացներ փորձառու մասնագետներից, առկա և առցանց ձևաչափով։ Ձեռք բերեք գործիքներ, որոնք անմիջապես կկիրառեք դասասենյակում։</p>
+    <div class="badge-row">
+      <span class="badge"><i class="ti ti-map-pin" aria-hidden="true"></i> Առկա</span>
+      <span class="badge"><i class="ti ti-wifi" aria-hidden="true"></i> Առցանց</span>
+      <span class="badge"><i class="ti ti-certificate" aria-hidden="true"></i> Հավաստագիր</span>
+    </div>
+    <div class="cta-group">
+      <a href="#register" class="btn-primary">Գրանցվել հիմնական փաթեթ</a>
+      <a href="#special" class="btn-secondary">Իմանալ ավելին</a>
+    </div>
+  </div>
+</div>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="container">
+    <div class="section-label">Հիմնական փաթեթ</div>
+    <h2 class="section-title">3 մոդուլ · 24 ակադեմիական ժամ</h2>
+    <p class="section-sub">Ամբողջ փաթեթը կարելի է ձեռք բերել մեկ արժեքով, կամ ընտրել առանձին հետաքրքրող մոդուլ։</p>
+
+    <div class="modules-grid">
+      <div class="module-card m1">
+        <div class="module-num">Մոդուլ 1</div>
+        <div class="module-name">21-րդ դարի հմտություններ</div>
+        <div class="module-hours"><i class="ti ti-clock" aria-hidden="true"></i> 8 ժամ</div>
+        <div class="module-tags">
+          <span class="module-tag">Քննադատական մտածողություն</span>
+          <span class="module-tag">Համագործակցություն</span>
+        </div>
+      </div>
+      <div class="module-card m2">
+        <div class="module-num">Մոդուլ 2</div>
+        <div class="module-name">Էսսեագրության դասընթաց</div>
+        <div class="module-hours"><i class="ti ti-clock" aria-hidden="true"></i> 6 ժամ</div>
+        <div class="module-tags">
+          <span class="module-tag">Գրավոր հաղորդակցություն</span>
+          <span class="module-tag">Կառուցվածք</span>
+        </div>
+      </div>
+      <div class="module-card m3">
+        <div class="module-num">Մոդուլ 3</div>
+        <div class="module-name">Թվային աշխարհի ուսուցիչ</div>
+        <div class="module-hours"><i class="ti ti-clock" aria-hidden="true"></i> 10 ժամ</div>
+        <div class="module-tags">
+          <span class="module-tag">Թվային գործիքներ</span>
+          <span class="module-tag">Հեռավար ուսուցում</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pricing-row">
+      <div class="price-card featured">
+        <div class="price-badge">Ձեռնտու</div>
+        <div class="price-label">Ամբողջ փաթեթ (3 մոդուլ)</div>
+        <div class="price-amount">35,000 <span>դրամ</span></div>
+        <div class="price-desc">Բոլոր 3 մոդուլները, 24 ժամ վերապատրաստում</div>
+        <ul class="feature-list">
+          <li><span class="check"><i class="ti ti-check"></i></span>Բոլոր 3 մոդուլները</li>
+          <li><span class="check"><i class="ti ti-check"></i></span>Առկա կամ առցանց ձևաչափ</li>
+          <li><span class="check"><i class="ti ti-check"></i></span>Ավարտական հավաստագիր</li>
+        </ul>
+        <a href="#register" class="btn-primary" style="display:block;text-align:center;font-size:14px;padding:11px">Գրանցվել</a>
+      </div>
+      <div class="price-card">
+        <div class="price-label">Առանձին մոդուլ</div>
+        <div class="price-amount">15,000 <span>դրամ</span></div>
+        <div class="price-desc">Ցանկացած մեկ մոդուլ ձեր ընտրությամբ</div>
+        <ul class="feature-list">
+          <li><span class="check"><i class="ti ti-check"></i></span>Ընտրված մոդուլ</li>
+          <li><span class="check"><i class="ti ti-check"></i></span>Ճկուն ժամանակացույց</li>
+          <li><span class="check"><i class="ti ti-check"></i></span>Հավաստագիր</li>
+        </ul>
+        <a href="#register" class="btn-secondary" style="display:block;text-align:center;font-size:14px;padding:10px">Ընտրել մոդուլ</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECIAL (Աշխարհացույց) -->
+<section id="special">
+  <div class="container">
+    <div class="special-section">
+      <div class="special-eyebrow">Նոր բաղադրիչ · Ապրիլի երկրորդ կեսից</div>
+      <h2 class="special-title">Նախագծային ուսուցում<br>«Աշխարհացույցի» օգնությամբ</h2>
+      <p class="special-desc">Խորը ծրագիր, որն ի մի կբերի տեսական գիտելիքն ու գործնական կիրառումը։ Ավարտին կունենաք ամբողջական ուսումնական նախագծի պլան՝ անմիջապես կիրառելու համար։</p>
+      <div class="special-grid">
+        <div class="special-stat"><div class="num">40</div><div class="lbl">Ակադ. ժամ</div></div>
+        <div class="special-stat"><div class="num">2</div><div class="lbl">Շաբաթ, առցանց</div></div>
+        <div class="special-stat"><div class="num">📜</div><div class="lbl">Պետ. հավաստագիր</div></div>
+      </div>
+      <div class="special-bottom">
+        <div>
+          <div class="special-price">50,000 <sub>դրամ</sub></div>
+          <div class="credit-note"><i class="ti ti-info-circle"></i> Հնարավոր է վերադարձ՝ սոցիալական կրեդիտների շրջանակում</div>
+        </div>
+        <a href="#register" class="btn-white">Կիրառել →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section>
+  <div class="container">
+    <div class="section-label">Ծրագիրը ներառում է</div>
+    <h2 class="section-title">Ինչ կստանաք</h2>
+    <div class="timeline-row">
+      <div class="tl-item">
+        <div class="tl-icon"><i class="ti ti-brain" aria-hidden="true"></i></div>
+        <div class="tl-label">Տեսական<br>գիտելիք</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-icon"><i class="ti ti-pencil" aria-hidden="true"></i></div>
+        <div class="tl-label">Գործնական<br>առաջադրանքներ</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-icon"><i class="ti ti-certificate" aria-hidden="true"></i></div>
+        <div class="tl-label">Պաշտոնական<br>հավաստագիր</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-icon"><i class="ti ti-layout-board" aria-hidden="true"></i></div>
+        <div class="tl-label">Պատրաստ<br>նախագծի պլան</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTRUCTORS -->
+<section id="instructors">
+  <div class="container">
+    <div class="section-label">Մասնագետներ</div>
+    <h2 class="section-title">Ձեր դասախոսները</h2>
+    <p class="section-sub">Փորձառու ոլորտային մասնագետներ, ովքեր ունեն գործնական կիրառման խոր փորձ</p>
+    <div class="instructors">
+      <div class="instructor"><div class="avatar">ՍՔ</div><div class="instructor-name">Սեդա Քոչարյան</div></div>
+      <div class="instructor"><div class="avatar">ՍԽ</div><div class="instructor-name">Սերոբ Խաչատրյան</div></div>
+      <div class="instructor"><div class="avatar">ՏԶ</div><div class="instructor-name">Տիգրան Զաքարյան</div></div>
+      <div class="instructor"><div class="avatar">ՀՂ</div><div class="instructor-name">Հայկանուշ Ղևոնդյան</div></div>
+      <div class="instructor"><div class="avatar">ԱՀ</div><div class="instructor-name">Անի Հովհաննիսյան</div></div>
+      <div class="instructor"><div class="avatar">ՆԵ</div><div class="instructor-name">Նաիրա Երկանյան</div></div>
+      <div class="instructor"><div class="avatar">ՄՄ</div><div class="instructor-name">Մելիք Մկրտչյան</div></div>
+      <div class="instructor" style="background:var(--color-bg-soft)">
+        <div class="avatar" style="background:transparent;font-size:20px;color:var(--color-text-muted)">+</div>
+        <div class="instructor-name" style="color:var(--color-text-muted);font-size:12px">Ոլորտային փորձագետներ</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="join-cta" id="register">
+  <div class="container">
+    <h2>Միացե՛ք հիմա</h2>
+    <p>Հիմնական եռամոդուլ դասընթացը հասանելի է արդեն այսօր։<br>Նախագծային ուսուցումը կմեկնարկի ապրիլի երկրորդ կեսից։</p>
+    <div class="cta-group">
+      <a href="mailto:info@example.am" class="btn-primary">Գրանցվել հիմնական փաթեթ</a>
+      <a href="mailto:info@example.am" class="btn-secondary">Հարց ուղարկել</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>© 2025 Ուսուցիչների վերապատրաստման ծրագիր · <strong>info@example.am</strong></p>
+  </div>
+</footer>
+
+</body>
+</html>
